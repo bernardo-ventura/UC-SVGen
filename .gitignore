@@ -1,0 +1,41 @@
+# Local files (not for version control)
+local/
+
+# Model weights
+Models/
+
+# Training datasets (download from HuggingFace)
+json_data/*.json
+!json_data/dataset_info.json
+
+# Training checkpoints and outputs
+saves/
+training_outputs/
+results/
+
+# Evaluation pretrained weights
+test/pretrain_weight/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Environments
+.env
+.venv
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
