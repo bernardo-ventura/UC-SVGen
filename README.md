@@ -35,7 +35,7 @@ sudo apt install libcairo2 libcairo2-dev
 ```
 ### 2.4 Python Dependencies
 ```bash
-pip install torch==2.5.1+cu124 torchvision==0.20.0+cu124 --index-url https://download.pytorch.org/whl/cu124
+pip install torch==2.5.0+cu124 torchvision==0.20.0+cu124 --index-url https://download.pytorch.org/whl/cu124
 pip install -r requirements.txt
 cd LLaMA-Factory && pip install -e ".[torch,metrics]"
 ```

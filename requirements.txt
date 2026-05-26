@@ -1,12 +1,12 @@
 apollo_torch==1.0.3
 av==14.2.0
 bitsandbytes==0.46.1
-datasets==3.0.0
+datasets>=3.0.0
 fastapi==0.116.1
 fire==0.7.0
 galore_torch==1.0
 gradio==5.40.0
-huggingface_hub==0.33.5
+huggingface_hub>=0.33.5
 jieba==0.42.1
 librosa==0.10.2.post1
 matplotlib==3.10.5
