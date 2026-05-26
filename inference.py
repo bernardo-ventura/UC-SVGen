@@ -35,7 +35,7 @@ def main(args):
     sampling_params = SamplingParams(temperature=0.2, top_p=0.7, max_tokens=8000)
     # Create an LLM instance.
     llm = LLM(model=model_path,
-              tensor_parallel_size=2, max_model_len=4096,
+              tensor_parallel_size=2, max_model_len=8192,
               max_num_seqs=50, trust_remote_code=True,
               tokenizer=model_path, tokenizer_mode='auto')
 
