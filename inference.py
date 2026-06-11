@@ -1,5 +1,6 @@
 import time
 import os
+import json
 import pandas as pd
 import re
 import argparse
@@ -20,6 +21,7 @@ def main(args):
     print(f"Prompt Type: {prompt_type}")
 
     os.makedirs(output_folder, exist_ok=True)
+    cot_records = []
     try:
         df = pd.read_csv(csv_file_path)
         descriptions = df['desc'].tolist()
@@ -61,14 +63,20 @@ def main(args):
         output = llm.generate(prompt, sampling_params)
         print(f"Generated output for ID {ids[i]}: {output}")
         
-        svg_code = output[0].outputs[0].text
-        # Use regex to extract content within ```svg ... ```
-        match = re.search(r'```svg\n(.*?)\n```', svg_code, re.DOTALL)
-        
-        if match:
-            svg_content = match.group(1)
+        full_output = output[0].outputs[0].text
+
+        # Extract CoT from <think>...</think>
+        cot_match = re.search(r'<think>(.*?)</think>', full_output, re.DOTALL)
+        cot_content = cot_match.group(1).strip() if cot_match else ""
+
+        # Extract SVG from ```svg ... ```
+        svg_match = re.search(r'```svg\n(.*?)\n```', full_output, re.DOTALL)
+
+        if svg_match:
+            svg_content = svg_match.group(1)
         else:
             print(f"SVG content not found for id: {ids[i]}")
+            cot_records.append({"id": ids[i], "desc": desc, "cot": cot_content, "svg": None})
             continue
 
         file_name = f"{ids[i]}.svg"
@@ -76,6 +84,13 @@ def main(args):
         with open(file_path, 'w', encoding='utf-8') as file:
             file.write(svg_content)
         print(f"Successfully saved {file_path}")
+
+        cot_records.append({"id": ids[i], "desc": desc, "cot": cot_content, "svg": svg_content})
+
+    cot_path = os.path.join(output_folder, "cot_outputs.json")
+    with open(cot_path, 'w', encoding='utf-8') as f:
+        json.dump(cot_records, f, ensure_ascii=False, indent=2)
+    print(f"CoT saved to {cot_path}")
 
     end_time = time.time()
     elapsed_time = end_time - start_time
