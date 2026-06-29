@@ -41,6 +41,7 @@ def main(args):
               max_num_seqs=50, trust_remote_code=True,
               tokenizer=model_path, tokenizer_mode='auto')
 
+    cot_path = os.path.join(output_folder, "cot_outputs.json")
     start_time = time.time()
 
     for i, desc in enumerate(descriptions):
@@ -72,24 +73,23 @@ def main(args):
         # Extract SVG from ```svg ... ```
         svg_match = re.search(r'```svg\n(.*?)\n```', full_output, re.DOTALL)
 
+        svg_content = None
         if svg_match:
             svg_content = svg_match.group(1)
+            file_name = f"{ids[i]}.svg"
+            file_path = os.path.join(output_folder, file_name)
+            with open(file_path, 'w', encoding='utf-8') as file:
+                file.write(svg_content)
+            print(f"Successfully saved {file_path}")
         else:
             print(f"SVG content not found for id: {ids[i]}")
-            cot_records.append({"id": ids[i], "desc": desc, "cot": cot_content, "svg": None})
-            continue
-
-        file_name = f"{ids[i]}.svg"
-        file_path = os.path.join(output_folder, file_name)
-        with open(file_path, 'w', encoding='utf-8') as file:
-            file.write(svg_content)
-        print(f"Successfully saved {file_path}")
 
         cot_records.append({"id": ids[i], "desc": desc, "cot": cot_content, "svg": svg_content})
 
-    cot_path = os.path.join(output_folder, "cot_outputs.json")
-    with open(cot_path, 'w', encoding='utf-8') as f:
-        json.dump(cot_records, f, ensure_ascii=False, indent=2)
+        # Write after every iteration so a mid-run interruption only loses the current item.
+        with open(cot_path, 'w', encoding='utf-8') as f:
+            json.dump(cot_records, f, ensure_ascii=False, indent=2)
+
     print(f"CoT saved to {cot_path}")
 
     end_time = time.time()
